@@ -1,0 +1,109 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+import encodageHmm as encod
+import apprentissage as app
+import os
+
+
+
+
+CURRENT_PATH = os.path.abspath(os.path.dirname(__file__))
+data = CURRENT_PATH.replace("hmm-python", "data")
+
+
+def encodeTestAsMatrix3n():
+    T = []
+    
+    f = open(data+"/test")
+    for line in f:
+        l = []
+        if line != "\n":
+            l = line.replace("\n", "").split("\t")
+        else:
+            l = ["", ""]
+        t = [l[0], l[1], ""]
+        T.append(t)
+
+    return T
+
+
+
+def get_class_max_proba_transition(I, T, E, categorie1, observable2):
+    maxProba = 0
+    categorieSelected = ""
+    for categorie in I:
+        t = 0.00001
+        e = 0.00001
+        if T[categorie1][categorie]>0:
+            t = T[categorie1][categorie]
+        if E[observable2][categorie]>0:
+            e = E[observable2][categorie]
+
+        probaCategorie_o2 = t * e
+
+        if probaCategorie_o2 > maxProba:
+            maxProba = probaCategorie_o2
+            categorieSelected = categorie
+    return categorieSelected
+
+def get_classes_max_proba_initiales(I, E, o_initial):
+    maxProba = 0
+    categorieSelected = ""
+    for categorie in I:
+        i = 0.0000001
+        e = 0.0000001
+        if I[categorie]>0:
+            i = I[categorie]
+        if E[o_initial][categorie]>0:
+            e = E[o_initial][categorie]
+
+        probaCategorie_o_initial = i * e
+
+        if probaCategorie_o_initial > maxProba:
+            maxProba = probaCategorie_o_initial
+            categorieSelected = categorie
+    return categorieSelected
+
+
+
+def determinerClassesParViterbi():
+
+    S = app.get_Pi_T_E()
+    I = S[0]
+    T = S[1]
+    E = S[2]
+
+    test_table = encodeTestAsMatrix3n()
+    reading_observable_initiale = True
+
+    for index in range(len(test_table)):
+        if test_table[index][0] != "":
+            if reading_observable_initiale:
+                reading_observable_initiale = False
+                test_table[index][2] = get_classes_max_proba_initiales(I, E, test_table[index][0])
+            else:
+                test_table[index][2] = get_class_max_proba_transition(I, T, E, test_table[index-1][1], test_table[index][0])
+
+        else:
+            reading_observable_initiale = True
+
+    return test_table
+
+
+def get_precision(table):
+    conteur = 0
+    conteur_blankLines = 0
+    for index in range(len(table)):
+        if table[index][1] == table[index][2] and table[index][1] != "":
+            conteur += 1
+        elif table[index][1] == "":
+            conteur_blankLines += 1
+    precision = float(conteur)/(len(table) - conteur_blankLines)
+    return precision
+
+
+if __name__=='__main__':
+    table = determinerClassesParViterbi()
+    print get_precision(table)
+
