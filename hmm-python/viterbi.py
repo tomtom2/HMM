@@ -28,6 +28,18 @@ def encodeTestAsMatrix3n():
     return T
 
 
+def getMaxEmission(E, observable):
+    maxProba = 0
+    categorieSelected = ""
+    for categorie in E[observable]:
+        e = 0.00001
+        if E[observable][categorie]>0:
+            e = E[observable][categorie]
+        if e > maxProba:
+            maxProba = e
+            categorieSelected = categorie
+    return categorieSelected
+
 
 def get_class_max_proba_transition(I, T, E, categorie1, observable2):
     maxProba = 0
@@ -91,6 +103,23 @@ def determinerClassesParViterbi():
     return test_table
 
 
+def determinerClassesParMethodeNaive():
+
+    S = app.get_Pi_T_E()
+    I = S[0]
+    T = S[1]
+    E = S[2]
+
+    test_table = encodeTestAsMatrix3n()
+
+    for index in range(len(test_table)):
+        if test_table[index][0] != "":
+            test_table[index][2] = getMaxEmission(E, test_table[index][0])
+
+    return test_table
+
+
+
 def get_precision(table):
     conteur = 0
     conteur_blankLines = 0
@@ -105,5 +134,7 @@ def get_precision(table):
 
 if __name__=='__main__':
     table = determinerClassesParViterbi()
-    print get_precision(table)
+    print "Viterbi -> "+str(get_precision(table)*100)[0:4]+"% correct"
+    tableNaif = determinerClassesParMethodeNaive()
+    print "algo naif -> "+str(get_precision(tableNaif)*100)[0:4]+"% correct"
 
