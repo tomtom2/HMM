@@ -110,6 +110,8 @@ def determinerClassesParMethodeNaive():
     T = S[1]
     E = S[2]
 
+    print T
+
     test_table = encodeTestAsMatrix3n()
 
     for index in range(len(test_table)):

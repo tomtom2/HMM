@@ -14,16 +14,30 @@ import encodageHmm as encod
 import apprentissage as app
 
 
+class HMM_BW(object):
 
-def initHmm():
-	states = encod.get_categories(data+"/voc_etats")
-	transitions = []
-	emissions = []
+	def __init__(self, listObservables):
+		self.listObservables = listObservables
+		initHmm(self, listObservables)
 
-	return [states, transitions, emissions]
+	def initHmm(self, listObservables):
+		self.states = encod.get_categories(data+"/voc_etats")
+		self.transitions = {}
+		for state in states:
+			self.transitions[state] = {}
+			for secondState in states:
+				self.transitions[state][secondState] = 1.0/len(states)
+
+		self.emissions = {}
+		for observable in listObservables:
+			self.emissions[observable] = {}
+			for state in states:
+				self.emissions[observable][state] = 1.0/len(states)
+
+		return [states, transitions, emissions]
 
 
-def setBeta():
-	a = 1+1
-	#for element in grid:
-	#	do sth
+	def setBeta(self):
+		a = 1+1
+		#for element in grid:
+		#	do sth

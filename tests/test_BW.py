@@ -11,13 +11,37 @@ import BW
 
 
 
-class BaumeWelch(unittest.TestCase):
+class BaumWelchInit(unittest.TestCase):
 	""" Tester la reussite"""
 
 	def test_stat_init(self):
-		stats = BW.initHmm()[0]
+		stats = BW.initHmm("obs")[0]
 		size = len(stats)
 		assert(size==14)
+
+	def test_transitions_init(self):
+		listObservables = ["je", "ne", "suis", "pas", "un", "hero"]
+		transitions = BW.initHmm(listObservables)[1]
+		sizeI = len(transitions)
+		sizeJ = 0
+		for key in transitions:
+			sizeJ = len(transitions[key])
+			break
+
+		assert(sizeI==14)
+		assert(sizeJ==14)
+
+	def test_emissions_init(self):
+		listObservables = ["je", "ne", "suis", "pas", "un", "hero"]
+		emissions = BW.initHmm(listObservables)[2]
+		sizeI = len(emissions)
+		sizeJ = 0
+		for key in emissions:
+			sizeJ = len(emissions[key])
+			break
+		print emissions
+		assert(sizeI==6)
+		assert(sizeJ==14)
 
 
 

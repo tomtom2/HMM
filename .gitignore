@@ -1,4 +1,6 @@
 *.tex
+*.aux
+*.log
 *.pdf
 redaction
 *.pyc
