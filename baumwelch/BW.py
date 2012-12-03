@@ -18,26 +18,55 @@ class HMM_BW(object):
 
 	def __init__(self, listObservables):
 		self.listObservables = listObservables
-		initHmm(self, listObservables)
+		self.initHmm(listObservables)
 
 	def initHmm(self, listObservables):
 		self.states = encod.get_categories(data+"/voc_etats")
 		self.transitions = {}
-		for state in states:
+		for state in self.states:
 			self.transitions[state] = {}
-			for secondState in states:
-				self.transitions[state][secondState] = 1.0/len(states)
+			for secondState in self.states:
+				self.transitions[state][secondState] = 1.0/len(self.states)
 
 		self.emissions = {}
 		for observable in listObservables:
 			self.emissions[observable] = {}
-			for state in states:
-				self.emissions[observable][state] = 1.0/len(states)
+			for state in self.states:
+				self.emissions[observable][state] = 1.0/len(self.states)
 
-		return [states, transitions, emissions]
+		return [self.states, self.transitions, self.emissions]
 
+	def setAlpha(self):
+		a = 1+1
+		#for element in grid:
+		#	do sth
 
 	def setBeta(self):
 		a = 1+1
 		#for element in grid:
 		#	do sth
+
+	def setGamma(self):
+		a = 1+1
+		#for element in grid:
+		#	do sth
+
+	def setPi(self):
+		a = 1+1
+		#for element in grid:
+		#	do sth
+
+	def setT(self):
+		a = 1+1
+		#for element in grid:
+		#	do sth
+
+	def setE(self):
+		a = 1+1
+		#for element in grid:
+		#	do sth
+
+	def iterate(self):
+		while 0 > 0.01:
+			pass
+			a = 1

@@ -7,21 +7,23 @@ CURRENT_PATH = os.path.abspath(os.path.dirname(__file__))
 src = CURRENT_PATH.replace("tests", "baumwelch")
 
 sys.path.append(src)
-import BW
+from BW import HMM_BW
 
 
 
 class BaumWelchInit(unittest.TestCase):
 	""" Tester la reussite"""
+	def setUp(self):
+		listObservables = ["je", "ne", "suis", "pas", "un", "hero"]
+		self.hmm = HMM_BW(listObservables)
 
 	def test_stat_init(self):
-		stats = BW.initHmm("obs")[0]
-		size = len(stats)
+		states = self.hmm.states
+		size = len(states)
 		assert(size==14)
 
 	def test_transitions_init(self):
-		listObservables = ["je", "ne", "suis", "pas", "un", "hero"]
-		transitions = BW.initHmm(listObservables)[1]
+		transitions = self.hmm.transitions
 		sizeI = len(transitions)
 		sizeJ = 0
 		for key in transitions:
@@ -32,14 +34,12 @@ class BaumWelchInit(unittest.TestCase):
 		assert(sizeJ==14)
 
 	def test_emissions_init(self):
-		listObservables = ["je", "ne", "suis", "pas", "un", "hero"]
-		emissions = BW.initHmm(listObservables)[2]
+		emissions = self.hmm.emissions
 		sizeI = len(emissions)
 		sizeJ = 0
 		for key in emissions:
 			sizeJ = len(emissions[key])
 			break
-		print emissions
 		assert(sizeI==6)
 		assert(sizeJ==14)
 
