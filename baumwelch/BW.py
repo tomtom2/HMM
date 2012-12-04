@@ -59,9 +59,19 @@ class HMM_BW(object):
 		return [self.states, self.transitions, self.emissions]
 
 	def setAlpha(self):
-		a = 1+1
-		#for element in grid:
-		#	do sth
+		# init alpha(i, 1) = Pi(i) #
+		for state in self.Pi:
+			self.alpha[0][state] = self.Pi[state]
+
+		# iterate forward #
+		for index in range(len(self.listObservables) - 1):
+			for j in self.Pi:
+				sumAlpha = 0.0
+				for etat in self.states:
+					sumAlpha = sumAlpha + self.alpha[index][etat]*self.emissions[self.listObservables[index]][etat]*self.transitions[etat][j]
+				self.alpha[index+1][j] = sumAlpha
+
+		
 
 	def setBeta(self):
 		a = 1+1

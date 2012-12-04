@@ -68,6 +68,20 @@ class BaumWelchIterate(unittest.TestCase):
 		listObservables = ["je", "ne", "suis", "pas", "un", "hero"]
 		self.hmm = HMM_BW(listObservables, 5)
 
+	def test_setAlpha(self):
+		alpha_0 = self.hmm.alpha[1]['A']
+		self.hmm.setAlpha()
+		alpha_1 = self.hmm.alpha[1]['A']
+
+		assert(not alpha_0 == alpha_1)
+
+	def test_setBeta(self):
+		beta_0 = self.hmm.beta[0]['A']
+		self.hmm.setAlpha()
+		beta_1 = self.hmm.beta[0]['A']
+
+		assert(not beta_0 == beta_1)
+
 	def test_iterations(self):
 		self.hmm.iterate()
 		assert(1==2)
