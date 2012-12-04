@@ -16,12 +16,34 @@ import apprentissage as app
 
 class HMM_BW(object):
 
-	def __init__(self, listObservables):
+	def __init__(self, listObservables, count):
+		self.iterationCount = count
 		self.listObservables = listObservables
 		self.initHmm(listObservables)
 
+		# init the alpha and beta grids #
+		self.alpha = range(len(self.listObservables))
+		for index in range(len(self.alpha)):
+			dictOfStates = {}
+			for key in self.states:
+				dictOfStates[key] = 1.0/len(self.states)
+			self.alpha[index] = dictOfStates
+
+		self.beta = range(len(self.listObservables))
+		for index in range(len(self.beta)):
+			dictOfStates = {}
+			for key in self.states:
+				dictOfStates[key] = 1.0/len(self.states)
+			self.beta[index] = dictOfStates
+
+
 	def initHmm(self, listObservables):
 		self.states = encod.get_categories(data+"/voc_etats")
+
+		self.Pi = {}
+		for key in self.states:
+			self.Pi[key] = 1.0/len(self.states)
+
 		self.transitions = {}
 		for state in self.states:
 			self.transitions[state] = {}
@@ -67,6 +89,6 @@ class HMM_BW(object):
 		#	do sth
 
 	def iterate(self):
-		while 0 > 0.01:
-			pass
-			a = 1
+		iterations = 0
+		while iterations < self.iterationCount:
+			iterations = iterations + 1

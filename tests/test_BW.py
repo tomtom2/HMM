@@ -12,15 +12,34 @@ from BW import HMM_BW
 
 
 class BaumWelchInit(unittest.TestCase):
-	""" Tester la reussite"""
+	""" Tester la reussite de l'initialisation """
 	def setUp(self):
 		listObservables = ["je", "ne", "suis", "pas", "un", "hero"]
-		self.hmm = HMM_BW(listObservables)
+		self.hmm = HMM_BW(listObservables, 5)
 
 	def test_stat_init(self):
 		states = self.hmm.states
 		size = len(states)
 		assert(size==14)
+
+	def test_Pi_init(self):
+		Pi = self.hmm.Pi
+		size = len(Pi)
+		assert(size==14)
+
+	def test_alpha_init(self):
+		alpha = self.hmm.alpha
+		sizeI = len(alpha)
+		sizeJ = len(alpha[0])
+		assert(sizeI==6)
+		assert(sizeJ==14)
+
+	def test_beta_init(self):
+		beta = self.hmm.beta
+		sizeI = len(beta)
+		sizeJ = len(beta[0])
+		assert(sizeI==6)
+		assert(sizeJ==14)
 
 	def test_transitions_init(self):
 		transitions = self.hmm.transitions
@@ -42,6 +61,18 @@ class BaumWelchInit(unittest.TestCase):
 			break
 		assert(sizeI==6)
 		assert(sizeJ==14)
+
+class BaumWelchIterate(unittest.TestCase):
+	""" Tester la reussite des réestimations """
+	def setUp(self):
+		listObservables = ["je", "ne", "suis", "pas", "un", "hero"]
+		self.hmm = HMM_BW(listObservables, 5)
+
+	def test_iterations(self):
+		self.hmm.iterate()
+		assert(1==2)
+
+
 
 
 
