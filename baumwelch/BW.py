@@ -74,9 +74,17 @@ class HMM_BW(object):
 		
 
 	def setBeta(self):
-		a = 1+1
-		#for element in grid:
-		#	do sth
+		# init beta(i, T) = E(i, o_t) #
+		for state in self.states:
+			self.beta[len(self.listObservables)-1][state] = self.emissions[self.listObservables[len(self.listObservables)-1]][state]
+
+		# iterate backward #
+		for index in range(len(self.listObservables) - 2, -1, -1):
+			for j in self.states:
+				sumBeta = 0.0
+				for etat in self.states:
+					sumBeta = sumBeta + self.beta[index+1][etat]*self.emissions[self.listObservables[index+1]][etat]*self.transitions[etat][j]
+				self.beta[index][j] = sumBeta
 
 	def setGamma(self):
 		a = 1+1
