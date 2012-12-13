@@ -77,7 +77,7 @@ class BaumWelchIterate(unittest.TestCase):
 
 	def test_setBeta(self):
 		beta_0 = self.hmm.beta[0]['A']
-		self.hmm.setAlpha()
+		self.hmm.setBeta()
 		beta_1 = self.hmm.beta[0]['A']
 
 		assert(not beta_0 == beta_1)
