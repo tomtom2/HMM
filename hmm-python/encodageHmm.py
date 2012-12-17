@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 def encode(file_path):
+    '''pre-traite les fichiers en vue de l'encodage (gestion des sauts de ligne notamment)'''
     T = []
     
     f = open(file_path)
@@ -12,6 +13,7 @@ def encode(file_path):
 
 
 def get_categories(file_path):
+    '''pre-traite les fichiers en vue de l'encodage (gestion des sauts de ligne notamment)'''
     T = []
     
     f = open(file_path)

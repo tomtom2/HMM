@@ -1,0 +1,236 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>viterbi &mdash; BaumWelch 1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="BaumWelch 1 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">BaumWelch 1 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for viterbi</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">encodageHmm</span> <span class="kn">as</span> <span class="nn">encod</span>
+<span class="kn">import</span> <span class="nn">apprentissage</span> <span class="kn">as</span> <span class="nn">app</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+
+
+
+<span class="n">CURRENT_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">))</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">CURRENT_PATH</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;hmm-python&quot;</span><span class="p">,</span> <span class="s">&quot;data&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="encodeTestAsMatrix3n"><a class="viewcode-back" href="../index.html#viterbi.encodeTestAsMatrix3n">[docs]</a><span class="k">def</span> <span class="nf">encodeTestAsMatrix3n</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;obtenir les donnees dans une matrice 3D&#39;&#39;&#39;</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">data</span><span class="o">+</span><span class="s">&quot;/test&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">line</span> <span class="o">!=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">:</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\t</span><span class="s">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">]</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s">&quot;&quot;</span><span class="p">]</span>
+        <span class="n">T</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">T</span>
+
+</div>
+<div class="viewcode-block" id="getMaxEmission"><a class="viewcode-back" href="../index.html#viterbi.getMaxEmission">[docs]</a><span class="k">def</span> <span class="nf">getMaxEmission</span><span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="n">observable</span><span class="p">):</span>
+    <span class="n">maxProba</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">categorieSelected</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">categorie</span> <span class="ow">in</span> <span class="n">E</span><span class="p">[</span><span class="n">observable</span><span class="p">]:</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="mf">0.00001</span>
+        <span class="k">if</span> <span class="n">E</span><span class="p">[</span><span class="n">observable</span><span class="p">][</span><span class="n">categorie</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="n">E</span><span class="p">[</span><span class="n">observable</span><span class="p">][</span><span class="n">categorie</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">e</span> <span class="o">&gt;</span> <span class="n">maxProba</span><span class="p">:</span>
+            <span class="n">maxProba</span> <span class="o">=</span> <span class="n">e</span>
+            <span class="n">categorieSelected</span> <span class="o">=</span> <span class="n">categorie</span>
+    <span class="k">return</span> <span class="n">categorieSelected</span>
+
+</div>
+<div class="viewcode-block" id="get_class_max_proba_transition"><a class="viewcode-back" href="../index.html#viterbi.get_class_max_proba_transition">[docs]</a><span class="k">def</span> <span class="nf">get_class_max_proba_transition</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">categorie1</span><span class="p">,</span> <span class="n">observable2</span><span class="p">):</span>
+    <span class="n">maxProba</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">categorieSelected</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">categorie</span> <span class="ow">in</span> <span class="n">I</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="mf">0.00001</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="mf">0.00001</span>
+        <span class="k">if</span> <span class="n">T</span><span class="p">[</span><span class="n">categorie1</span><span class="p">][</span><span class="n">categorie</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">T</span><span class="p">[</span><span class="n">categorie1</span><span class="p">][</span><span class="n">categorie</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">E</span><span class="p">[</span><span class="n">observable2</span><span class="p">][</span><span class="n">categorie</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="n">E</span><span class="p">[</span><span class="n">observable2</span><span class="p">][</span><span class="n">categorie</span><span class="p">]</span>
+
+        <span class="n">probaCategorie_o2</span> <span class="o">=</span> <span class="n">t</span> <span class="o">*</span> <span class="n">e</span>
+
+        <span class="k">if</span> <span class="n">probaCategorie_o2</span> <span class="o">&gt;</span> <span class="n">maxProba</span><span class="p">:</span>
+            <span class="n">maxProba</span> <span class="o">=</span> <span class="n">probaCategorie_o2</span>
+            <span class="n">categorieSelected</span> <span class="o">=</span> <span class="n">categorie</span>
+    <span class="k">return</span> <span class="n">categorieSelected</span>
+</div>
+<div class="viewcode-block" id="get_classes_max_proba_initiales"><a class="viewcode-back" href="../index.html#viterbi.get_classes_max_proba_initiales">[docs]</a><span class="k">def</span> <span class="nf">get_classes_max_proba_initiales</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">o_initial</span><span class="p">):</span>
+    <span class="n">maxProba</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">categorieSelected</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">categorie</span> <span class="ow">in</span> <span class="n">I</span><span class="p">:</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mf">0.0000001</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="mf">0.0000001</span>
+        <span class="k">if</span> <span class="n">I</span><span class="p">[</span><span class="n">categorie</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">I</span><span class="p">[</span><span class="n">categorie</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">E</span><span class="p">[</span><span class="n">o_initial</span><span class="p">][</span><span class="n">categorie</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="n">E</span><span class="p">[</span><span class="n">o_initial</span><span class="p">][</span><span class="n">categorie</span><span class="p">]</span>
+
+        <span class="n">probaCategorie_o_initial</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">e</span>
+
+        <span class="k">if</span> <span class="n">probaCategorie_o_initial</span> <span class="o">&gt;</span> <span class="n">maxProba</span><span class="p">:</span>
+            <span class="n">maxProba</span> <span class="o">=</span> <span class="n">probaCategorie_o_initial</span>
+            <span class="n">categorieSelected</span> <span class="o">=</span> <span class="n">categorie</span>
+    <span class="k">return</span> <span class="n">categorieSelected</span>
+
+
+</div>
+<div class="viewcode-block" id="determinerClassesParViterbi"><a class="viewcode-back" href="../index.html#viterbi.determinerClassesParViterbi">[docs]</a><span class="k">def</span> <span class="nf">determinerClassesParViterbi</span><span class="p">():</span>
+
+    <span class="n">S</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">get_Pi_T_E</span><span class="p">()</span>
+    <span class="n">I</span> <span class="o">=</span> <span class="n">S</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">S</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="n">S</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="n">test_table</span> <span class="o">=</span> <span class="n">encodeTestAsMatrix3n</span><span class="p">()</span>
+    <span class="n">reading_observable_initiale</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">test_table</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">test_table</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">reading_observable_initiale</span><span class="p">:</span>
+                <span class="n">reading_observable_initiale</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="n">test_table</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_classes_max_proba_initiales</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">test_table</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">test_table</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_class_max_proba_transition</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">test_table</span><span class="p">[</span><span class="n">index</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">test_table</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">reading_observable_initiale</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">return</span> <span class="n">test_table</span>
+
+</div>
+<div class="viewcode-block" id="determinerClassesParMethodeNaive"><a class="viewcode-back" href="../index.html#viterbi.determinerClassesParMethodeNaive">[docs]</a><span class="k">def</span> <span class="nf">determinerClassesParMethodeNaive</span><span class="p">():</span>
+
+    <span class="n">S</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">get_Pi_T_E</span><span class="p">()</span>
+    <span class="n">I</span> <span class="o">=</span> <span class="n">S</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">S</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="n">S</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="k">print</span> <span class="n">T</span>
+
+    <span class="n">test_table</span> <span class="o">=</span> <span class="n">encodeTestAsMatrix3n</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">test_table</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">test_table</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&quot;&quot;</span><span class="p">:</span>
+            <span class="n">test_table</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">getMaxEmission</span><span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="n">test_table</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">test_table</span>
+
+
+</div>
+<div class="viewcode-block" id="get_precision"><a class="viewcode-back" href="../index.html#viterbi.get_precision">[docs]</a><span class="k">def</span> <span class="nf">get_precision</span><span class="p">(</span><span class="n">table</span><span class="p">):</span>
+    <span class="n">conteur</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">conteur_blankLines</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">table</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">table</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">table</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="ow">and</span> <span class="n">table</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&quot;&quot;</span><span class="p">:</span>
+            <span class="n">conteur</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">table</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;&quot;</span><span class="p">:</span>
+            <span class="n">conteur_blankLines</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">precision</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">conteur</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">table</span><span class="p">)</span> <span class="o">-</span> <span class="n">conteur_blankLines</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">precision</span>
+
+</div>
+<span class="k">if</span> <span class="n">__name__</span><span class="o">==</span><span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">determinerClassesParViterbi</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">&quot;Viterbi -&gt; &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">get_precision</span><span class="p">(</span><span class="n">table</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">+</span><span class="s">&quot;</span><span class="si">% c</span><span class="s">orrect&quot;</span>
+    <span class="n">tableNaif</span> <span class="o">=</span> <span class="n">determinerClassesParMethodeNaive</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">&quot;algo naif -&gt; &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">get_precision</span><span class="p">(</span><span class="n">tableNaif</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">+</span><span class="s">&quot;</span><span class="si">% c</span><span class="s">orrect&quot;</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">BaumWelch 1 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Les cenentraliens.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

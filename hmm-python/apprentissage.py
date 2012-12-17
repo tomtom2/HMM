@@ -13,6 +13,7 @@ data = CURRENT_PATH.replace("hmm-python", "data")
 
 
 def getCategoryDict():
+    '''Création d'un dictionnaire pour les categories'''
     #le tableau des catégories
     Cat = encod.get_categories(data+"/voc_etats")
     dico = {}
@@ -23,6 +24,7 @@ def getCategoryDict():
 
 
 def get_Pi_T_E():
+    '''Création des tableaux pour les observables et initialisation des valeurs pour les probabilités d'émission, de transition et initiales'''
 
     #le tableau des observables
     Tab = encod.encode(data+"/voc_observables")
@@ -112,6 +114,7 @@ def get_Pi_T_E():
 
 
 def make_hmm():
+    '''Génère le hmm a partir des matrices precedemment calculées'''
     start = t.time()
     path = CURRENT_PATH + "/hmm.txt"
     print path
