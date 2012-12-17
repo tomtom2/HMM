@@ -120,8 +120,6 @@ def determinerClassesParMethodeNaive():
 
     return test_table
 
-
-
 def get_precision(table):
     conteur = 0
     conteur_blankLines = 0
@@ -133,6 +131,24 @@ def get_precision(table):
     precision = float(conteur)/(len(table) - conteur_blankLines)
     return precision
 
+
+### for Baum Welch ###
+def determinerClassesAvecDonneeExternes(test_table, I, T, E):
+    reading_observable_initiale = True
+
+    for index in range(len(test_table)):
+        if test_table[index][0] != "":
+            if reading_observable_initiale:
+                reading_observable_initiale = False
+                test_table[index][2] = get_classes_max_proba_initiales(I, E, test_table[index][0])
+            else:
+                test_table[index][2] = get_class_max_proba_transition(I, T, E, test_table[index-1][1], test_table[index][0])
+
+        else:
+            reading_observable_initiale = True
+
+    return test_table
+#########################
 
 if __name__=='__main__':
     table = determinerClassesParViterbi()
