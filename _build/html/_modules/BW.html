@@ -1,0 +1,212 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>BW &mdash; BaumWelch 1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="BaumWelch 1 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">BaumWelch 1 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for BW</h1><div class="highlight"><pre>
+<span class="c">#!/usr/bin/python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">CURRENT_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">))</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">CURRENT_PATH</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;baumwelch&quot;</span><span class="p">,</span> <span class="s">&quot;data&quot;</span><span class="p">)</span>
+<span class="n">hmm_python</span> <span class="o">=</span> <span class="n">CURRENT_PATH</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;baumwelch&quot;</span><span class="p">,</span> <span class="s">&quot;hmm-python&quot;</span><span class="p">)</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hmm_python</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">encodageHmm</span> <span class="kn">as</span> <span class="nn">encod</span>
+<span class="kn">import</span> <span class="nn">apprentissage</span> <span class="kn">as</span> <span class="nn">app</span>
+
+
+<div class="viewcode-block" id="HMM_BW"><a class="viewcode-back" href="../index.html#BW.HMM_BW">[docs]</a><span class="k">class</span> <span class="nc">HMM_BW</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+	<span class="sd">&#39;&#39;&#39;definition du HMM comme étant un objet&#39;&#39;&#39;</span>
+
+	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">listObservables</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+		<span class="sd">&#39;&#39;&#39;initialisation du hmm&#39;&#39;&#39;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">iterationCount</span> <span class="o">=</span> <span class="n">count</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">listObservables</span> <span class="o">=</span> <span class="n">listObservables</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">initHmm</span><span class="p">(</span><span class="n">listObservables</span><span class="p">)</span>
+
+		<span class="c"># init the alpha and beta grids #</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">listObservables</span><span class="p">))</span>
+		<span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)):</span>
+			<span class="n">dictOfStates</span> <span class="o">=</span> <span class="p">{}</span>
+			<span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
+				<span class="n">dictOfStates</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">)</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">dictOfStates</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">listObservables</span><span class="p">))</span>
+		<span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">)):</span>
+			<span class="n">dictOfStates</span> <span class="o">=</span> <span class="p">{}</span>
+			<span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
+				<span class="n">dictOfStates</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">)</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">dictOfStates</span>
+
+
+<div class="viewcode-block" id="HMM_BW.initHmm"><a class="viewcode-back" href="../index.html#BW.HMM_BW.initHmm">[docs]</a>	<span class="k">def</span> <span class="nf">initHmm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">listObservables</span><span class="p">):</span>
+		<span class="sd">&#39;&#39;&#39;initialisation du hmm et premier calcul pour les probabilites de transitions, emissions et initiales&#39;&#39;&#39;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">states</span> <span class="o">=</span> <span class="n">encod</span><span class="o">.</span><span class="n">get_categories</span><span class="p">(</span><span class="n">data</span><span class="o">+</span><span class="s">&quot;/voc_etats&quot;</span><span class="p">)</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">Pi</span> <span class="o">=</span> <span class="p">{}</span>
+		<span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">Pi</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">)</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">transitions</span> <span class="o">=</span> <span class="p">{}</span>
+		<span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">transitions</span><span class="p">[</span><span class="n">state</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+			<span class="k">for</span> <span class="n">secondState</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">transitions</span><span class="p">[</span><span class="n">state</span><span class="p">][</span><span class="n">secondState</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">)</span>
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">emissions</span> <span class="o">=</span> <span class="p">{}</span>
+		<span class="k">for</span> <span class="n">observable</span> <span class="ow">in</span> <span class="n">listObservables</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">emissions</span><span class="p">[</span><span class="n">observable</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+			<span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">emissions</span><span class="p">[</span><span class="n">observable</span><span class="p">][</span><span class="n">state</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">)</span>
+
+		<span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">transitions</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">emissions</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="HMM_BW.setAlpha"><a class="viewcode-back" href="../index.html#BW.HMM_BW.setAlpha">[docs]</a>	<span class="k">def</span> <span class="nf">setAlpha</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&#39;&#39;&#39;Calcul des alphas&#39;&#39;&#39;</span>
+		<span class="c"># init alpha(i, 1) = Pi(i) #</span>
+		<span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Pi</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">state</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Pi</span><span class="p">[</span><span class="n">state</span><span class="p">]</span>
+
+		<span class="c"># iterate forward #</span>
+		<span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">listObservables</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+			<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">Pi</span><span class="p">:</span>
+				<span class="n">sumAlpha</span> <span class="o">=</span> <span class="mf">0.0</span>
+				<span class="k">for</span> <span class="n">etat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
+					<span class="n">sumAlpha</span> <span class="o">=</span> <span class="n">sumAlpha</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="n">etat</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">emissions</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">listObservables</span><span class="p">[</span><span class="n">index</span><span class="p">]][</span><span class="n">etat</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">transitions</span><span class="p">[</span><span class="n">etat</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">[</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">sumAlpha</span>
+
+		
+</div>
+<div class="viewcode-block" id="HMM_BW.setBeta"><a class="viewcode-back" href="../index.html#BW.HMM_BW.setBeta">[docs]</a>	<span class="k">def</span> <span class="nf">setBeta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&#39;&#39;&#39;calcul des betas&#39;&#39;&#39;</span>
+		<span class="c"># init beta(i, T) = E(i, o_t) #</span>
+		<span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">listObservables</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">state</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">emissions</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">listObservables</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">listObservables</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]][</span><span class="n">state</span><span class="p">]</span>
+
+		<span class="c"># iterate backward #</span>
+		<span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">listObservables</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+			<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
+				<span class="n">sumBeta</span> <span class="o">=</span> <span class="mf">0.0</span>
+				<span class="k">for</span> <span class="n">etat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
+					<span class="n">sumBeta</span> <span class="o">=</span> <span class="n">sumBeta</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="n">etat</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">emissions</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">listObservables</span><span class="p">[</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">]][</span><span class="n">etat</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">transitions</span><span class="p">[</span><span class="n">etat</span><span class="p">][</span><span class="n">j</span><span class="p">]</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">sumBeta</span>
+</div>
+<div class="viewcode-block" id="HMM_BW.setGamma"><a class="viewcode-back" href="../index.html#BW.HMM_BW.setGamma">[docs]</a>	<span class="k">def</span> <span class="nf">setGamma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="sd">&#39;&#39;&#39;calcul des gamma, somme des alpha beta&#39;&#39;&#39;</span>
+		<span class="n">a</span> <span class="o">=</span> <span class="mi">1</span><span class="o">+</span><span class="mi">1</span>
+		<span class="c">#for element in grid:</span>
+		<span class="c">#	do sth</span>
+</div>
+	<span class="k">def</span> <span class="nf">setPi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="n">a</span> <span class="o">=</span> <span class="mi">1</span><span class="o">+</span><span class="mi">1</span>
+		<span class="c">#for element in grid:</span>
+		<span class="c">#	do sth</span>
+
+	<span class="k">def</span> <span class="nf">setT</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="n">a</span> <span class="o">=</span> <span class="mi">1</span><span class="o">+</span><span class="mi">1</span>
+		<span class="c">#for element in grid:</span>
+		<span class="c">#	do sth</span>
+
+	<span class="k">def</span> <span class="nf">setE</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="n">a</span> <span class="o">=</span> <span class="mi">1</span><span class="o">+</span><span class="mi">1</span>
+		<span class="c">#for element in grid:</span>
+		<span class="c">#	do sth</span>
+
+	<span class="k">def</span> <span class="nf">iterate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="n">iterations</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="k">while</span> <span class="n">iterations</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterationCount</span><span class="p">:</span>
+			<span class="n">iterations</span> <span class="o">=</span> <span class="n">iterations</span> <span class="o">+</span> <span class="mi">1</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">BaumWelch 1 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Les cenentraliens.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

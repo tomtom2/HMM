@@ -63,7 +63,7 @@ class BaumWelchInit(unittest.TestCase):
 		assert(sizeJ==14)
 
 class BaumWelchIterate(unittest.TestCase):
-	""" Tester la reussite des réestimations """
+	""" Tester la reussite des reestimations """
 	def setUp(self):
 		listObservables = ["je", "ne", "suis", "pas", "un", "hero"]
 		self.hmm = HMM_BW(listObservables, 5)
