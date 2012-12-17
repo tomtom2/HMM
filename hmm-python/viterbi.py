@@ -109,7 +109,7 @@ def determinerClassesParViterbi():
 
 
 def determinerClassesParMethodeNaive():
-    '''Determiner la classe en utilisant une methode naive : prendre l'etat dont la probabilité est maximale pour l'observable '''
+    '''Déterminer la classe en utilisant une methode naive : prendre l'état dont la probabilité est maximale pour l'observable (on ne prends pas en compte les probabilités de transition'''
 
     S = app.get_Pi_T_E()
     I = S[0]
@@ -129,7 +129,7 @@ def determinerClassesParMethodeNaive():
 
 
 def get_precision(table):
-    '''Calcule la précision de notre algorithme de Viterbi sur les donnees que l'on avait'''
+    '''Calcule la précision de notre algorithme de Viterbi sur les données que l'on avait'''
     conteur = 0
     conteur_blankLines = 0
     for index in range(len(table)):
