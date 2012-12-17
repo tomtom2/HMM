@@ -15,15 +15,8 @@ import apprentissage as app
 
 
 class HMM_BW(object):
-<<<<<<< HEAD
 
 	def __init__(self, listObservables, listOfStates, count):
-=======
-	'''Definition d'une classe et donc d'un HMM comme étant un objet, calcul et etiration via l'algorithme de Baum Welch'''
-	
-	def __init__(self, listObservables, count):
-		'''initialisation du hmm'''
->>>>>>> e4c4863887d5b2470159924429d713abf2c23a03
 		self.iterationCount = count
 		self.listObservables = listObservables
 		self.states = listOfStates
@@ -53,11 +46,6 @@ class HMM_BW(object):
 
 
 	def initHmm(self, listObservables):
-<<<<<<< HEAD
-=======
-		'''Initialisation du hmm lambda_0 et premier calcul pour les probabilites de transitions, emissions et initiales (equiprobabilité partout)'''
-		self.states = encod.get_categories(data+"/voc_etats")
->>>>>>> e4c4863887d5b2470159924429d713abf2c23a03
 
 		self.Pi = {}
 		for key in self.states:
@@ -78,8 +66,6 @@ class HMM_BW(object):
 		return [self.states, self.transitions, self.emissions]
 
 	def setAlpha(self):
-		'''Calcul des alpha(i,t) tels que definis dans les slides,  correspond à la probabilité de se trouver dans
-l’etat i du HMM lambda a un instant t, ayant observe la suite o1 . . . ot−1 '''
 		# init alpha(i, 1) = Pi(i) #
 		for state in self.Pi:
 			self.alpha[0][state] = self.Pi[state]
@@ -95,7 +81,6 @@ l’etat i du HMM lambda a un instant t, ayant observe la suite o1 . . . ot−1 
 		
 
 	def setBeta(self):
-		'''Calcul des beta(i,t) tels que definis dans les slides, meme calcul que pour les alpha mais avec un parcours inverse du treillis.'''
 		# init beta(i, T) = E(i, o_t) #
 		for state in self.states:
 			self.beta[len(self.listObservables)-1][state] = self.emissions[self.listObservables[len(self.listObservables)-1]][state]
@@ -111,7 +96,6 @@ l’etat i du HMM lambda a un instant t, ayant observe la suite o1 . . . ot−1 
 
 
 	def setGamma(self):
-<<<<<<< HEAD
 		# iterate forward #
 		for index in range(len(self.listObservables)):
 			for j in self.states:
@@ -123,14 +107,6 @@ l’etat i du HMM lambda a un instant t, ayant observe la suite o1 . . . ot−1 
 					self.gamma[index][j] = (self.alpha[index][j]*self.beta[index][j])/sumGamma
 
 
-=======
-		'''calcul des gammas(i,t), probabilite que lambda_0 soit dans l'etat i a l'instant t'''
-		a = 1+1
-		#for element in grid:
-		#	do sth
->>>>>>> e4c4863887d5b2470159924429d713abf2c23a03
-
-		
 
 	def setPi(self):
 		for state in self.states:
