@@ -13,6 +13,7 @@ data = CURRENT_PATH.replace("hmm-python", "data")
 
 
 def encodeTestAsMatrix3n():
+    '''Obtenir les données dans une matrice 3D'''
     T = []
     
     f = open(data+"/test")
@@ -29,6 +30,7 @@ def encodeTestAsMatrix3n():
 
 
 def getMaxEmission(E, observable):
+    '''Recherche la categorie avec le maximum de probabilité d\'emission '''
     maxProba = 0
     categorieSelected = ""
     for categorie in E[observable]:
@@ -42,6 +44,7 @@ def getMaxEmission(E, observable):
 
 
 def get_class_max_proba_transition(I, T, E, categorie1, observable2):
+    '''Retourne la catgorie avec le maximum de probabilité de transition'''
     maxProba = 0
     categorieSelected = ""
     for categorie in I:
@@ -60,6 +63,7 @@ def get_class_max_proba_transition(I, T, E, categorie1, observable2):
     return categorieSelected
 
 def get_classes_max_proba_initiales(I, E, o_initial):
+    '''Retourne la catégorie avec le maximum de probabilité initiale'''
     maxProba = 0
     categorieSelected = ""
     for categorie in I:
@@ -80,6 +84,7 @@ def get_classes_max_proba_initiales(I, E, o_initial):
 
 
 def determinerClassesParViterbi():
+    '''Utilisation de l'algorithme de Viterbi pour determiner la classe des observables'''
 
     S = app.get_Pi_T_E()
     I = S[0]
@@ -104,6 +109,7 @@ def determinerClassesParViterbi():
 
 
 def determinerClassesParMethodeNaive():
+    '''Déterminer la classe en utilisant une methode naive : prendre l'état dont la probabilité est maximale pour l'observable (on ne prends pas en compte les probabilités de transition'''
 
     S = app.get_Pi_T_E()
     I = S[0]
@@ -121,6 +127,7 @@ def determinerClassesParMethodeNaive():
     return test_table
 
 def get_precision(table):
+    '''Calcule la précision de notre algorithme de Viterbi sur les données que l'on avait'''
     conteur = 0
     conteur_blankLines = 0
     for index in range(len(table)):

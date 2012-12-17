@@ -66,7 +66,7 @@ class BaumWelchInit(unittest.TestCase):
 		assert(sizeJ==len(self.listState))
 
 class BaumWelchIterate(unittest.TestCase):
-	""" Tester la reussite des réestimations """
+	""" Tester la reussite des reestimations """
 	def setUp(self):
 		self.listState = ['A', 'B']
 		self.listObservables = ["je", "ne", "suis", "pas", "un", "hero"]
