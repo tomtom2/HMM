@@ -2,7 +2,9 @@ from BW import HMM_BW
 import os, sys
 
 
-hmm_determine = False
+hmm_determine = True
+perturbation = False
+coef = 0.001
 
 CURRENT_PATH = os.path.abspath(os.path.dirname(__file__))
 hmm_viterbi = CURRENT_PATH.replace("baumwelch", "hmm-python")
@@ -17,7 +19,7 @@ import random
 def encodeTestAsMatrix3n():
     T = []
     
-    f = open(data+"/test")
+    f = open(data+"/BWtest")
     for line in f:
         l = []
         if line != "\n":
@@ -45,6 +47,11 @@ S = app.get_Pi_T_E()
 I = S[0]
 T = S[1]
 E = S[2]
+if perturbation:
+    for obs in listObservables:
+        for state in listState:
+            if obs in E and not state=="":
+                E[obs][state]+=(random.random()-0.5)*coef
 ###########################################################
 hmm = HMM_BW(listObservables, listState, 1)
 
@@ -95,6 +102,10 @@ hmm.iterate()
 table = viterbi.determinerClassesAvecDonneeExternes(test_table, hmm.transitions[""], hmm.transitions, hmm.emissions)
 print str(get_precision(table)*100)[0:5]+"% correct"
 
+print "on applique une perturbation sur la matrice d'emission:"
+hmm.perturbation(0.00001)
+print str(viterbi.get_precision(table)*100)[0:4]+"% correct"
+print "on itere a nouveau:"
 hmm.iterate()
 table = viterbi.determinerClassesAvecDonneeExternes(test_table, hmm.transitions[""], hmm.transitions, hmm.emissions)
 print str(get_precision(table)*100)[0:5]+"% correct"

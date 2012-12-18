@@ -176,3 +176,9 @@ class HMM_BW(object):
 			self.setPi()
 			self.setT()
 			self.setE()
+
+	def perturbation(self, coef):
+		for obs in self.listObservables:
+			for state in self.states:
+				if obs in self.emissions and not state=="":
+					self.emissions[obs][state]+=(random.random()-0.5)*coef
