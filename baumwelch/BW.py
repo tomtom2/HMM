@@ -12,6 +12,7 @@ sys.path.append(hmm_python)
 
 import encodageHmm as encod
 import apprentissage as app
+import random
 
 
 class HMM_BW(object):
@@ -49,19 +50,19 @@ class HMM_BW(object):
 
 		self.Pi = {}
 		for key in self.states:
-			self.Pi[key] = 1.0/len(self.states)
+			self.Pi[key] = random.random()
 
 		self.transitions = {}
 		for state in self.states:
 			self.transitions[state] = {}
 			for secondState in self.states:
-				self.transitions[state][secondState] = 1.0/len(self.states)
+				self.transitions[state][secondState] = random.random()
 
 		self.emissions = {}
 		for observable in listObservables:
 			self.emissions[observable] = {}
 			for state in self.states:
-				self.emissions[observable][state] = 1.0/len(self.states)
+				self.emissions[observable][state] = random.random()
 
 		return [self.states, self.transitions, self.emissions]
 
@@ -111,6 +112,7 @@ class HMM_BW(object):
 	def setPi(self):
 		for state in self.states:
 			self.Pi[state] = self.gamma[0][state]
+			self.transitions[""] = self.Pi
 
 	def setT(self):
 		#init proba pt for the calcul of transition probabilities

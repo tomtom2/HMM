@@ -10,35 +10,62 @@ import viterbi
 import encodageHmm as encod
 
 
+def encodeTestAsMatrix3n():
+    T = []
+    
+    f = open(data+"/BWtest")
+    for line in f:
+        l = []
+        if line != "\n":
+            l = line.replace("\n", "").split("\t")
+        else:
+            l = ["", ""]
+        t = [l[0], l[1], ""]
+        T.append(t)
 
-listState = ["", "CL", "ADV", "V", "D", "N"] #encod.get_categories(data+"/voc_etats")
-listObservables = ["", "je", "ne", "suis", "pas", "un", "hero"]
-etats_reels = ["", "CL", "ADV", "V", "ADV", "D", "N"]
+    return T
+
+
+
+listState = encod.get_categories(data+"/voc_etats")
+listState.append('')
+
+test_table = encodeTestAsMatrix3n()
+
+listObservables = range(len(test_table))
+for kk in range(len(test_table)):
+	listObservables[kk] = test_table[kk][0]
+
 hmm = HMM_BW(listObservables, listState, 1)
+for state in hmm.emissions[""]:
+	if state == "":
+		hmm.emissions[""][state] = 1.0
+	else:
+		hmm.emissions[""][state] = 0.0
 
-test_table = range(len(listObservables))
-for index in range(len(listObservables)):
-	test_table[index] = range(3)
-	test_table[index][0] = listObservables[index]
-	test_table[index][1] = etats_reels[index]
-	test_table[index][2] = ""
 
-table = viterbi.determinerClassesAvecDonneeExternes(test_table, hmm.Pi, hmm.transitions, hmm.emissions)
-hmm.emissions[''] = {"":1.0, "CL":0.0, "ADV":0.0, "V":0.0, "ADV":0.0, "D":0.0, "N":0.0}
-for obs in hmm.emissions:
-	if not obs == "":
-		hmm.emissions[obs][""] = 0.0
+def get_precision(table):
+    conteur = 0
+    conteur_blankLines = 0
+    for index in range(len(table)):
+        if table[index][1] == table[index][2]:
+            conteur += 1
+    precision = float(conteur)/(len(table) - conteur_blankLines)
+    return precision
 
-print hmm.emissions
-print table
+table = viterbi.determinerClassesAvecDonneeExternes(test_table, hmm.transitions[""], hmm.transitions, hmm.emissions)
+
+print str(viterbi.get_precision(table)*100)[0:4]+"% correct"
 print "on lance les reestimations:"
 hmm.iterate()
-table = viterbi.determinerClassesAvecDonneeExternes(test_table, hmm.Pi, hmm.transitions, hmm.emissions)
-print hmm.emissions
-print table
+table = viterbi.determinerClassesAvecDonneeExternes(test_table, hmm.transitions[""], hmm.transitions, hmm.emissions)
+print str(get_precision(table)*100)[0:4]+"% correct"
 
-print "on lance les reestimations:"
 hmm.iterate()
-table = viterbi.determinerClassesAvecDonneeExternes(test_table, hmm.Pi, hmm.transitions, hmm.emissions)
-print hmm.emissions
-print table
+table = viterbi.determinerClassesAvecDonneeExternes(test_table, hmm.transitions[""], hmm.transitions, hmm.emissions)
+print str(get_precision(table)*100)[0:4]+"% correct"
+
+hmm.iterate()
+table = viterbi.determinerClassesAvecDonneeExternes(test_table, hmm.transitions[""], hmm.transitions, hmm.emissions)
+print str(get_precision(table)*100)[0:4]+"% correct"
+

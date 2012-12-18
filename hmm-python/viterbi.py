@@ -49,7 +49,7 @@ def get_class_max_proba_transition(I, T, E, categorie1, observable2):
         e = 0.00001
         if T[categorie1][categorie]>0:
             t = T[categorie1][categorie]
-        if E[observable2][categorie]>0:
+        if observable2 in E and E[observable2][categorie]>0:
             e = E[observable2][categorie]
 
         probaCategorie_o2 = t * e
@@ -67,7 +67,7 @@ def get_classes_max_proba_initiales(I, E, o_initial):
         e = 0.0000001
         if I[categorie]>0:
             i = I[categorie]
-        if E[o_initial][categorie]>0:
+        if o_initial in E and E[o_initial][categorie]>0:
             e = E[o_initial][categorie]
 
         probaCategorie_o_initial = i * e
