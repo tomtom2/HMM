@@ -21,8 +21,11 @@ class HMM_BW(object):
 		self.iterationCount = count
 		self.listObservables = listObservables
 		self.states = listOfStates
-		self.initHmm(listObservables)
+		self.initAuxGrid()
+		self.initHmm()
 
+
+	def initAuxGrid(self):
 		# init the alpha and beta grids #
 		self.alpha = range(len(self.listObservables))
 		for index in range(len(self.alpha)):
@@ -45,12 +48,14 @@ class HMM_BW(object):
 				dictOfStates[key] = 0.0
 			self.gamma[index] = dictOfStates
 
-
-	def initHmm(self, listObservables):
+	def initHmm(self):
 
 		self.Pi = {}
 		for key in self.states:
-			self.Pi[key] = random.random()
+			self.Pi[key] = 0.0
+			if key == "":
+				self.Pi[key] = 1.0
+
 
 		self.transitions = {}
 		for state in self.states:
@@ -59,7 +64,7 @@ class HMM_BW(object):
 				self.transitions[state][secondState] = random.random()
 
 		self.emissions = {}
-		for observable in listObservables:
+		for observable in self.listObservables:
 			self.emissions[observable] = {}
 			for state in self.states:
 				self.emissions[observable][state] = random.random()
@@ -69,7 +74,7 @@ class HMM_BW(object):
 	def setAlpha(self):
 		# init alpha(i, 1) = Pi(i) #
 		for state in self.Pi:
-			self.alpha[0][state] = self.Pi[state]
+			self.alpha[0][state] = self.transitions[""][state]
 
 		# iterate forward #
 		for index in range(len(self.listObservables) - 1):
