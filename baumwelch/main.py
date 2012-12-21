@@ -3,8 +3,8 @@ import os, sys
 
 
 hmm_determine = True
-perturbation = False
-coef = 0.001
+perturbation = True
+coef = 0.00001
 
 CURRENT_PATH = os.path.abspath(os.path.dirname(__file__))
 hmm_viterbi = CURRENT_PATH.replace("baumwelch", "hmm-python")
@@ -105,6 +105,13 @@ print str(get_precision(table)*100)[0:5]+"% correct"
 print "on applique une perturbation sur la matrice d'emission:"
 hmm.perturbation(0.00001)
 print str(viterbi.get_precision(table)*100)[0:4]+"% correct"
+print "on itere a nouveau:"
+hmm.iterate()
+table = viterbi.determinerClassesAvecDonneeExternes(test_table, hmm.transitions[""], hmm.transitions, hmm.emissions)
+print str(get_precision(table)*100)[0:5]+"% correct"
+# print "on applique une autre perturbation sur la matrice d'emission:"
+# hmm.perturbation(0.0000001)
+# print str(viterbi.get_precision(table)*100)[0:4]+"% correct"
 print "on itere a nouveau:"
 hmm.iterate()
 table = viterbi.determinerClassesAvecDonneeExternes(test_table, hmm.transitions[""], hmm.transitions, hmm.emissions)
